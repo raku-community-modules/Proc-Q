@@ -42,12 +42,13 @@ Defined as:
     sub proc-q (
         +@commands where .so && .all ~~ List & .so,
 
-               :@tags where .all ~~ Cool = @commands,
+               :@tags where .elems == @commands   && .all ~~ Cool = @commands,
+               :@in   where .elems == @commands|0 && .all ~~ Cool,
         UInt   :$timeout,
         Int:D  :$batch = 8,
         Bool:D :$out   = True,
         Bool:D :$err   = True,
-        Bool:D :$merge = False,
+        Bool:D :$merge where .not | .so & $out & $err = False,
 
         --> Supply:D
     )
