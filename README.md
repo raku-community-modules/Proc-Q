@@ -8,9 +8,29 @@ Proc::Q - Benchmark some code
 
 ```perl6
     use Proc::Q;
+
+    my @modules = <Testo  Test::When  WWW  IRC::Client  Number::Denominate>;
+    react whenever proc-q @modules.map: { «zef --debug --install "$_"» } {
+        when .out.contains: 'FAILED' {
+            say "When I ran {.tag}, the installation failed: " ~ .err
+        }
+        say "When I ran {.tag}, the installation succeeded!"
+    }
+
+    # OUTPUT:
+    # When I ran zef --debug --install "Testo", the installation succeeded!
+    # When I ran zef --debug --install "IRC::Client", the installation succeeded!
+    # When I ran zef --debug --install "Test::When", the installation succeeded!
+    # When I ran zef --debug --install "Number::Denominate", the installation succeeded!
+    # When I ran zef --debug --install "WWW", the installation failed:
+    #    blah blah blah
+    #    <stderr output omited for this example>
 ```
 
 # DESCRIPTION
+
+Got a bunch of [Procs](https://docs.perl6.org/type/Proc) you want to queue up
+and run, preferably with some timeout for Procs that get stuck? Well, good news!
 
 # EXPORTED SUBROUTINES
 
@@ -19,7 +39,18 @@ Proc::Q - Benchmark some code
 Defined as:
 
 ```perl6
-    sub proc-q ()
+    sub proc-q (
+        +@commands where .so && .all ~~ List & .so,
+
+               :@tags where .all ~~ Cool = @commands,
+        UInt   :$timeout,
+        Int:D  :$batch = 8,
+        Bool:D :$out   = True,
+        Bool:D :$err   = True,
+        Bool:D :$merge = False,
+
+        --> Supply:D
+    )
 ```
 
 ----
