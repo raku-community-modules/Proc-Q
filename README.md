@@ -4,6 +4,32 @@
 
 Proc::Q - Queue up and run a whole ton of Procs
 
+# TABLE OF CONTENTS
+- [NAME](#name)
+- [SYNOPSIS](#synopsis)
+- [DESCRIPTION](#description)
+- [EXPORTED SUBROUTINES AND TYPES](#exported-subroutines-and-types)
+    - [`proc-q`](#proc-q)
+        - [`+@commands`](#commands)
+    - [`:@tags`](#tags)
+    - [`:@in`](#in)
+    - [`:$batch`](#batch)
+    - [`:$timeout`](#timeout)
+    - [`:$out`](#out)
+    - [`:$err`](#err)
+    - [`:$merge`](#merge)
+    - [`Proc::Q::Res`](#procqres)
+        - [`.tag`](#tag)
+        - [`.out`](#out-1)
+        - [`.err`](#err-1)
+        - [`.merged`](#merged)
+        - [`.exitcode`](#exitcode)
+        - [`.killed`](#killed)
+- [REPOSITORY](#repository)
+- [BUGS](#bugs)
+- [AUTHOR](#author)
+- [LICENSE](#license)
+
 # SYNOPSIS
 
 ```perl6
