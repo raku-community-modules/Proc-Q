@@ -133,7 +133,7 @@ ignored.
 
 Must have at least one list of commands inside `@commands`
 
-## `:@tags`
+### `:@tags`
 
 To make it possible to match the input with the output, you can 'tag' each
 of the commands in `@commands` by specifying the value via `@tags` argument
@@ -143,7 +143,7 @@ Any object can be used as a tag. If `:@tags` is provided, it must have the same
 number of elements as `+@commands` argument. If it's not provided, it defaults
 to `@commands`.
 
-## `:@in`
+### `:@in`
 
 Optionally, you can send stuff to STDIN of your procs, by giving a `Blob` or
 `Str` in `:@in` arg at the same index as the the index of the command for that
@@ -151,14 +151,14 @@ proc in `@commands`. If specified, the number of elements in `@in` must be the
 same as number of elements in `@commands`. Specify undefined value to avoid
 sending STDIN to a particular proc.
 
-## `:$batch`
+### `:$batch`
 
 Takes a positive `Int`. Defaults to `8`. Specifies how many `@commands`
 to run at the same time. The routine will wait for each batch to complete,
 either by procs finishing or being killed due to timeout (see `:$timeout` arg).
 The value should probably be something around the number of cores on your box.
 
-## `:$timeout`
+### `:$timeout`
 
 By default is not specified.
 Takes a positive `Numeric` specifying the number of seconds after which
@@ -172,7 +172,7 @@ and if after 1 second it's still alive, it gets another kill with `SIGSEGV`.
 current batch complete so if you don't specify a `$:timeout`, a single hung proc
 will hold everyone up.
 
-## `:$out`
+### `:$out`
 
 Defaults to `True`.
 If set to `True` or string `'bin'`, the routine will capture STDOUT from the
@@ -180,11 +180,11 @@ procs, and make it available in `.out` method of `Proc::Q::Res` object. If set
 to string `'bin'`, the output will be captured in binary and `.out` method will
 contain a `Blob` instead of `Str`
 
-## `:$err`
+### `:$err`
 
 Same as `:$out` except as applied to procs' STDERR.
 
-## `:$merge`
+### `:$merge`
 
 Defaults to `False`.
 If set to `True`, both `:$err` and `:$out` must be set to `True` or both set to
