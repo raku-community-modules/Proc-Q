@@ -7,24 +7,51 @@ Proc::Q - Queue up and run a whole ton of Procs
 # SYNOPSIS
 
 ```perl6
-    use Proc::Q;
+use Proc::Q;
 
-    my @modules = <Testo  Test::When  WWW  IRC::Client  Number::Denominate>;
-    react whenever proc-q @modules.map: { «zef --debug --install "$_"» } {
-        when .out.contains: 'FAILED' {
-            say "When I ran {.tag}, the installation failed: " ~ .err
-        }
-        say "When I ran {.tag}, the installation succeeded!"
-    }
+# Run 26 procs; each receiving stuff on STDIN and putting stuff out to STDOUT,
+# as well as sleeping for increasingly long periods of time. The timeout
+# of 3 seconds will kill all the procs that sleep longer than that.
 
-    # OUTPUT:
-    # When I ran zef --debug --install "Testo", the installation succeeded!
-    # When I ran zef --debug --install "IRC::Client", the installation succeeded!
-    # When I ran zef --debug --install "Test::When", the installation succeeded!
-    # When I ran zef --debug --install "Number::Denominate", the installation succeeded!
-    # When I ran zef --debug --install "WWW", the installation failed:
-    #    blah blah blah
-    #    <stderr output omited for this example>
+my @stuff = 'a'..'z';
+my $proc-chan = proc-q
+             @stuff.map({«perl6 -e "print '$_' ~ \$*IN.slurp; sleep {$++/5}"»}),
+  tags    => @stuff.map('Letter ' ~ *),
+  in      => @stuff.map(*.uc),
+  timeout => 3;
+
+react whenever $proc-chan {
+    say "Got a result for {.tag}: STDOUT: {.out}"
+        ~ (". Killed due to timeout" if .killed)
+}
+
+# OUTPUT:
+# Got a result for Letter a: STDOUT: aA
+# Got a result for Letter b: STDOUT: bB
+# Got a result for Letter c: STDOUT: cC
+# Got a result for Letter d: STDOUT: dD
+# Got a result for Letter e: STDOUT: eE
+# Got a result for Letter f: STDOUT: fF
+# Got a result for Letter g: STDOUT: gG
+# Got a result for Letter h: STDOUT: hH
+# Got a result for Letter i: STDOUT: iI
+# Got a result for Letter j: STDOUT: jJ
+# Got a result for Letter k: STDOUT: kK
+# Got a result for Letter l: STDOUT: lL
+# Got a result for Letter m: STDOUT: mM
+# Got a result for Letter n: STDOUT: nN
+# Got a result for Letter o: STDOUT: oO. Killed due to timeout
+# Got a result for Letter p: STDOUT: pP. Killed due to timeout
+# Got a result for Letter s: STDOUT: sS. Killed due to timeout
+# Got a result for Letter t: STDOUT: tT. Killed due to timeout
+# Got a result for Letter v: STDOUT: vV. Killed due to timeout
+# Got a result for Letter w: STDOUT: wW. Killed due to timeout
+# Got a result for Letter q: STDOUT: qQ. Killed due to timeout
+# Got a result for Letter r: STDOUT: rR. Killed due to timeout
+# Got a result for Letter u: STDOUT: uU. Killed due to timeout
+# Got a result for Letter x: STDOUT: xX. Killed due to timeout
+# Got a result for Letter y: STDOUT: yY. Killed due to timeout
+# Got a result for Letter z: STDOUT: zZ. Killed due to timeout
 ```
 
 # DESCRIPTION
@@ -48,19 +75,21 @@ Defined as:
                     and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
                 },
         Numeric :$timeout where .DEFINITE.not | $_ > 0,
-        UInt:D  :$batch where .so = 8,
-                :$out = True where Bool:D|'bin',
-                :$err = True where Bool:D|'bin',
-        Bool:D  :$merge where .not | .so & (
+        UInt:D  :$batch   where .so = 8,
+                :$out     where Bool:D|'bin' = True,
+                :$err     where Bool:D|'bin' = True,
+        Bool:D  :$merge   where .not | .so & (
                   $out & $err & (
                        $err eq 'bin' & $out eq 'bin'
                     | ($err ne 'bin' & $out ne 'bin'))) = False,
 
-        --> Supply:D
+        --> Channel:D
     )
 ```
 
-Returns a [`Supply`](https://docs.perl6.org/type/Supply) of `Proc::Q::Res`
+See SYNOPSIS for sample use.
+
+Returns a [`Channel`](https://docs.perl6.org/type/Channel) of `Proc::Q::Res`
 objects. Batches the `@commands` in batches of `$batch` and runs those via
 in parallel, optionally feeding STDIN with corresponding data from
 `@in`, as well as capturing STDOUT/STDERR, and [killing the
@@ -143,7 +172,7 @@ after output to STDOUT, might end up *before* STDOUT's data in `.merged` object.
 
 ## `Proc::Q::Res`
 
-Each of the item emited to the `Supply` from `proc-q` routine will be
+Each of the item sent to the `Channel` from `proc-q` routine will be
 a `Proc::Q::Res` object (technically, it might also be an `Exception` object
 if something explodes while trying to launch and wait for a proc, but it's of
 the "should never happen" variety; the `Exception` will be the reason why
@@ -180,12 +209,17 @@ use, the `.out` and `.err` methods will contain the separated streams.
 
 ### `.exitcode`
 
-                    has Int:D   $.exitcode is required;
-                    has Mu      $.tag      is required;
-                    has Bool:D  $.killed   is required;
-                }.new: :err($err-res), :out($out-res), :merged($mer-res),
-                       :$tag,          :$killed,
-                       :exitcode($proc-obj.exitcode)
+Contains [the exit code](https://docs.perl6.org/type/Proc#method_exitcode) of
+the executed proc.
+
+### `.killed`
+
+A `Bool:D` that is `True` if this proc was killed due to the `:$timeout`. More
+precisely, this is an indication that the timeout expired and the kill code
+started to run. It *is* possible for a proc to successfully complete in this
+small window opportunity between the attribute being set and the signal from
+[`.kill`](https://docs.perl6.org/type/Proc::Async#method_kill)
+being received by the process
 
 ----
 

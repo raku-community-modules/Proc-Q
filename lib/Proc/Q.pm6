@@ -12,19 +12,22 @@ sub proc-q (
                 and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
             },
     Numeric :$timeout where .DEFINITE.not | $_ > 0,
-    UInt:D  :$batch where .so = 8,
-            :$out = True where Bool:D|'bin',
-            :$err = True where Bool:D|'bin',
-    Bool:D  :$merge where .not | .so & (
+    UInt:D  :$batch   where .so = 8,
+            :$out     where Bool:D|'bin' = True,
+            :$err     where Bool:D|'bin' = True,
+    Bool:D  :$merge   where .not | .so & (
               $out & $err & (
                    $err eq 'bin' & $out eq 'bin'
                 | ($err ne 'bin' & $out ne 'bin'))) = False,
 
-    --> Supply:D
+    --> Channel:D
 ) is export {
-    supply (@commands Z @tags Z @in).batch($batch).map: -> $pack {
+    my $c = Channel.new;
+    start {
+      (@commands Z @tags Z @in).batch($batch).map: -> $pack {
         my @results = $pack.map: -> ($command, $tag, $in) {
             start do with Proc::Async.new: |$command, :w($in.defined) -> $proc {
+              CATCH { default { dd $_ } }
                 my Cool $out-res = $out eq 'bin' ?? Buf.new !! '' if $out;
                 my Cool $err-res = $err eq 'bin' ?? Buf.new !! '' if $err;
                 my Cool $mer-res = $out eq 'bin' ?? Buf.new !! '' if $merge;
@@ -68,7 +71,10 @@ sub proc-q (
             await Promise.anyof: @results;
             my @ready = @results.grep: *.so;
             @results .= grep: none @ready;
-            emit .status ~~ Kept ?? .result !! .cause for @ready;
+            $c.send: .status ~~ Kept ?? .result !! .cause for @ready;
         }
+      }
+      $c.close;
     }
+    $c
 }

@@ -4,10 +4,6 @@ use Proc::Q;
 
 plan 5;
 
-# Awaiting fix for
-# https://rt.perl.org/Ticket/Display.html?id=131479#ticket-history
-# to write more complete tests
-
 my @commands = <foo bar ber meow moo>;
 my $sup = proc-q @commands.map({(
     $*EXECUTABLE, '-e',
