@@ -1,63 +1,63 @@
 use v6.d.PREVIEW;
 
 unit module Proc::Q;
+
 sub proc-q (
     +@commands where .so && .all ~~ List & .so,
 
-           :@tags where .elems == @commands   && .all ~~ Cool = @commands,
-           :@in   where .elems == @commands|0 && .all ~~ Cool,
-    UInt   :$timeout,
-    Int:D  :$batch = 8,
-    Bool:D :$out   = True,
-    Bool:D :$err   = True,
-    Bool:D :$merge where .not | .so & $out & $err = False,
+            :@tags where .elems == @commands   && .all ~~ Cool = @commands,
+            :@in   where .elems == @commands|0 && .all ~~ Cool,
+    Numeric :$timeout where .DEFINITE.not | $_ > 0,
+    UInt:D  :$batch where .so = 8,
+    Bool:D  :$out = True,
+    Bool:D  :$err = True,
+    Bool:D  :$merge where .not | .so & $out & $err = False,
 
     --> Supply:D
 ) is export {
-    supply @commands.batch($batch).map: -> $ (*@commands) {
-        my @results = @commands.map: -> $command {
-            start do with Proc::Async.new: |$command, :$out, :$err {
-                class Proc::Q::Res {
-                    has Str:D  $.err is required;
-                    has Str:D  $.out is required;
-                    has Str:D  $.tag is required;
-                    has Str    $.merged;
-                    has Bool:D $.killed =  False;
-                }
-                my $out-s = ''; my $err-s = ''; my $mer-s = '';
-                $out and .stdout.tap: $out-s ~ *;
-                $err and .stderr.tap: $err-s ~ *;
+    supply (@commands Z @tags Z @in).batch($batch).map: -> $pack {
+        my @results = $pack.map: -> ($command, $tag, $in) {
+            start do with Proc::Async.new: |$command, :w($in.so) -> $proc {
+                my $out-res = ''; my $err-res = ''; my $mer-res = '';
+                $out and $proc.stdout.tap: $out-res ~= *;
+                $err and $proc.stderr.tap: $err-res ~= *;
                 if $merge {
-                    .stdout.tap: $mer-s ~ *;
-                    .stdout.tap: $mer-s ~ *;
+                    $proc.stdout.tap: $mer-res ~= *;
+                    $proc.stderr.tap: $mer-res ~= *;
                 }
-                my $prom = .start;
+                my $prom = $proc.start;
+                if $in {
+                    await $in ~~ Blob ?? $proc.write: $in !! $proc.print: $in;
+                    $proc.close-stdin;
+                }
+
+                my $killed = False;
                 $timeout.DEFINITE and Promise.in($timeout).then: {
                     $prom or try {
-                        $out ~= 'FAILED! KILLING INSTALL FOR TAKING TOO LONG!';
-                        say "KILLING install of $module for taking too long";
-                        $proc.kill;
-                        $proc.kill: SIGTERM;
-                        $proc.kill: SIGSEGV
+                        $killed = True;
+                        say $proc.kill: SIGTERM;
+                        Promise.in(½).then: $proc.kill: SIGSEGV;
                     }
                 }
-                so try await $proc-prom;
-                OUTPUT_DIR.add($module.subst: :g, /\W+/, '-').spurt:
-                      "ERR: $err\n\n-----\n\n" ~ "OUT: $out\n";
-                $out
+                my $proc-obj = await $prom;
+
+                class Res {
+                    has Str:D  $.err      is required;
+                    has Str:D  $.out      is required;
+                    has Str:D  $.merged   is required;
+                    has Int:D  $.exitcode is required;
+                    has Str:D  $.tag      is required;
+                    has Bool:D $.killed   is required;
+                }.new: :err($err-res), :out($out-res), :merged($mer-res),
+                       :$tag,          :$killed,  :exitcode($proc-obj.exitcode);
             }
         }
 
-        say "Started {+@results} Promises. Awaiting results";
         while @results {
             await Promise.anyof: @results;
             my @ready = @results.grep: *.so;
             @results .= grep: none @ready;
-            for @ready {
-                say .Module-Name ~ ': ', .status ~~ Kept
-                    ?? <SUCCEEDED!  FAILED!>[.result.contains: 'FAILED']
-                    !! "died with {.cause}";
-            }
+            emit .status ~~ Kept ?? .result !! .cause for @ready;
         }
     }
 }
