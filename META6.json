@@ -5,7 +5,9 @@
     "version"      : "1.001001",
     "description"  : "Queue up and run a whole ton of Procs",
     "tags"         : [ "proc", "process" ],
-    "depends"      : [ ],
+    "depends"      : [
+        "RakudoPrereq"
+    ],
     "test-depends" : [
         "Testo",
         "Test::META"
