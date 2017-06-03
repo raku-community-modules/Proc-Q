@@ -2,7 +2,7 @@
 
 # NAME
 
-Proc::Q - Queue up and run a whole ton of Procs
+Proc::Q - Queue up and run a herd of Procs
 
 # TABLE OF CONTENTS
 - [SYNOPSIS](#synopsis)

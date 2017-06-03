@@ -3,7 +3,7 @@
     "name"         : "Proc::Q",
     "license"      : "Artistic-2.0",
     "version"      : "1.001001",
-    "description"  : "Queue up and run a whole ton of Procs",
+    "description"  : "Queue up and run a herd of Procs",
     "tags"         : [ "proc", "process" ],
     "depends"      : [
         "RakudoPrereq"
