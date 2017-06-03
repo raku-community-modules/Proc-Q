@@ -84,6 +84,8 @@ react whenever $proc-chan {
 Got a bunch of [Procs](https://docs.perl6.org/type/Proc) you want to queue up
 and run, preferably with some timeout for Procs that get stuck? Well, good news!
 
+**Requires Rakudo 2017.06 or newer.**
+
 # EXPORTED SUBROUTINES AND TYPES
 
 ## `proc-q`

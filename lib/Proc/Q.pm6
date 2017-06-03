@@ -1,6 +1,6 @@
 no precompilation;
 use v6.d.PREVIEW;
-use RakudoPrereq v2017.05.343.g.99421.d.4.ca,
+use RakudoPrereq v2017.05.347.g.61.ecfd.5,
   'Proc::Q module requires Rakudo v2017.06 or newer';
 unit module Proc::Q;
 
