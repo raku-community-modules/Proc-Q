@@ -10,24 +10,25 @@ sub proc-q (
             :@in   where {
                 .elems == @commands|0
                 and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
-            },
+            } = (Nil xx @commands).List,
     Numeric :$timeout where .DEFINITE.not | $_ > 0,
     UInt:D  :$batch   where .so = 8,
             :$out     where Bool:D|'bin' = True,
             :$err     where Bool:D|'bin' = True,
     Bool:D  :$merge   where .not | .so & (
               $out & $err & (
-                   $err eq 'bin' & $out eq 'bin'
+                  ($err eq 'bin' & $out eq 'bin')
                 | ($err ne 'bin' & $out ne 'bin'))) = False,
 
     --> Channel:D
 ) is export {
     my $c = Channel.new;
     start {
+      CATCH { default { .say } }
       (@commands Z @tags Z @in).batch($batch).map: -> $pack {
         my @results = $pack.map: -> ($command, $tag, $in) {
             start do with Proc::Async.new: |$command, :w($in.defined) -> $proc {
-              CATCH { default { dd $_ } }
+                CATCH { default { .say } }
                 my Cool $out-res = $out eq 'bin' ?? Buf.new !! '' if $out;
                 my Cool $err-res = $err eq 'bin' ?? Buf.new !! '' if $err;
                 my Cool $mer-res = $out eq 'bin' ?? Buf.new !! '' if $merge;
@@ -41,15 +42,17 @@ sub proc-q (
 
                 my Promise:D $prom   = $proc.start;
                 my Bool:D    $killed = False;
-                $timeout.DEFINITE and Promise.in($timeout).then: {
-                    await $proc.ready;
-                    $killed = True;
-                    $proc.kill: SIGTERM;
-                    Promise.in(1).then: {$prom or $proc.kill: SIGSEGV}
+                $timeout.DEFINITE and $proc.ready.then: {
+                    Promise.in($timeout).then: {
+                        $killed = True;
+                        $proc.kill: SIGTERM;
+                        Promise.in(1).then: {$prom or $proc.kill: SIGSEGV}
+                    }
                 }
 
                 with $in {
-                    await $in ~~ Blob ?? $proc.write: $in !! $proc.print: $in;
+                    try await $in ~~ Blob ?? $proc.write: $in
+                                          !! $proc.print: $in;
                     $proc.close-stdin;
                 }
 

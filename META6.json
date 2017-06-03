@@ -10,6 +10,7 @@
     ],
     "test-depends" : [
         "Testo",
+        "Test::Notice",
         "Test::META"
     ],
     "provides"     : {

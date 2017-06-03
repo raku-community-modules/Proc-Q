@@ -98,14 +98,14 @@ Defined as:
                 :@in   where {
                     .elems == @commands|0
                     and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
-                },
+                } = (Nil xx @commands).List,
         Numeric :$timeout where .DEFINITE.not | $_ > 0,
         UInt:D  :$batch   where .so = 8,
                 :$out     where Bool:D|'bin' = True,
                 :$err     where Bool:D|'bin' = True,
         Bool:D  :$merge   where .not | .so & (
                   $out & $err & (
-                       $err eq 'bin' & $out eq 'bin'
+                      ($err eq 'bin' & $out eq 'bin')
                     | ($err ne 'bin' & $out ne 'bin'))) = False,
 
         --> Channel:D
@@ -161,11 +161,10 @@ The value should probably be something around the number of cores on your box.
 
 By default is not specified.
 Takes a positive `Numeric` specifying the number of seconds after which
-a proc should be killed, if it did not complete yet. Note that the timer
-starts ticking after [`Proc::Async.start`
-](https://docs.perl6.org/type/Proc::Async#method_start) is called, not after
-the process actually starts up. The process is killed with `SIGTERM` signal
-and if after 1 second it's still alive, it gets another kill with `SIGSEGV`.
+a proc should be killed, if it did not complete yet. Timer starts ticking once
+the proc is [`.ready`](https://docs.perl6.org/type/Proc::Async#method_ready).
+The process is killed with `SIGTERM` signal and if after 1 second it's still
+alive, it gets another kill with `SIGSEGV`.
 
 **NOTE:** another batch of procs **won't get started** until all procs in the
 current batch complete so if you don't specify a `$:timeout`, a single hung proc
