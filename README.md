@@ -152,6 +152,9 @@ proc in `@commands`. If specified, the number of elements in `@in` must be the
 same as number of elements in `@commands`. Specify undefined value to avoid
 sending STDIN to a particular proc.
 
+TIP: is your queue hanging for some reason? Ensure the procs you're running
+arent's sitting and waiting for STDIN. Try passing an empty strings in `:@in`.
+
 ### `:$batch`
 
 Takes a positive `Int`. Defaults to `8`. Specifies how many `@commands`
