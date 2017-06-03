@@ -99,7 +99,7 @@ Defined as:
                     .elems == @commands|0
                     and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
                 } = (Nil xx @commands).List,
-        Numeric :$timeout where .DEFINITE.not | $_ > 0,
+        Numeric :$timeout where .DEFINITE.not || $_ > 0,
         UInt:D  :$batch   where .so = 8,
                 :$out     where Bool:D|'bin' = True,
                 :$err     where Bool:D|'bin' = True,

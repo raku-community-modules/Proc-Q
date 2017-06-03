@@ -1,3 +1,4 @@
+no precompilation;
 use v6.d.PREVIEW;
 use RakudoPrereq v2017.05.343.g.99421.d.4.ca,
   'Proc::Q module requires Rakudo v2017.06 or newer';
@@ -11,7 +12,7 @@ sub proc-q (
                 .elems == @commands|0
                 and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
             } = (Nil xx @commands).List,
-    Numeric :$timeout where .DEFINITE.not | $_ > 0,
+    Numeric :$timeout where .DEFINITE.not || $_ > 0,
     UInt:D  :$batch   where .so = 8,
             :$out     where Bool:D|'bin' = True,
             :$err     where Bool:D|'bin' = True,
