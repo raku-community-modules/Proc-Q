@@ -10,7 +10,7 @@ sub proc-q (
             :@tags where .elems == @commands = @commands,
             :@in   where {
                 .elems == @commands|0
-                and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
+                and all .map: {$_ ~~ Cool:D|Blob:D|Nil or $_ === Any}
             } = (Nil xx @commands).List,
     Numeric :$timeout where .DEFINITE.not || $_ > 0,
     UInt:D  :$batch   where .so = 8,
@@ -30,9 +30,9 @@ sub proc-q (
         my @results = $pack.map: -> ($command, $tag, $in) {
             start do with Proc::Async.new: |$command, :w($in.defined) -> $proc {
                 CATCH { default { .say } }
-                my Cool $out-res = $out eq 'bin' ?? Buf.new !! '' if $out;
-                my Cool $err-res = $err eq 'bin' ?? Buf.new !! '' if $err;
-                my Cool $mer-res = $out eq 'bin' ?? Buf.new !! '' if $merge;
+                my Stringy $out-res = $out eq 'bin' ?? Buf.new !! '' if $out;
+                my Stringy $err-res = $err eq 'bin' ?? Buf.new !! '' if $err;
+                my Stringy $mer-res = $out eq 'bin' ?? Buf.new !! '' if $merge;
 
                 $out and $proc.stdout(:bin($out eq 'bin')).tap: $out-res ~= *;
                 $err and $proc.stderr(:bin($err eq 'bin')).tap: $err-res ~= *;
@@ -52,19 +52,19 @@ sub proc-q (
                 }
 
                 with $in {
-                    try await $in ~~ Blob ?? $proc.write: $in
-                                          !! $proc.print: $in;
+                    try await $in ~~ Blob ?? $proc.write:  $in
+                                          !! $proc.print: ~$in;
                     $proc.close-stdin;
                 }
 
                 my $proc-obj = await $prom;
                 class Res {
-                    has Cool   $.out      is required;
-                    has Cool   $.err      is required;
-                    has Cool   $.merged   is required;
-                    has Int:D  $.exitcode is required;
-                    has Mu     $.tag      is required;
-                    has Bool:D $.killed   is required;
+                    has Stringy $.out      is required;
+                    has Stringy $.err      is required;
+                    has Stringy $.merged   is required;
+                    has Int:D   $.exitcode is required;
+                    has Mu      $.tag      is required;
+                    has Bool:D  $.killed   is required;
                 }.new: :err($err-res), :out($out-res), :merged($mer-res),
                        :$tag,          :$killed,
                        :exitcode($proc-obj.exitcode)

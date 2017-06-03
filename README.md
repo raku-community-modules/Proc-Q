@@ -97,7 +97,7 @@ Defined as:
                 :@tags where .elems == @commands = @commands,
                 :@in   where {
                     .elems == @commands|0
-                    and all .map: {$_ ~~ Cool:D|Nil or $_ === Any}
+                    and all .map: {$_ ~~ Cool:D|Blob:D|Nil or $_ === Any}
                 } = (Nil xx @commands).List,
         Numeric :$timeout where .DEFINITE.not || $_ > 0,
         UInt:D  :$batch   where .so = 8,
@@ -217,17 +217,17 @@ is to match this `Proc::Q::Res` object to the proc you ran.
 
 ### `.out`
 
-Contains a `Cool` with STDOUT of the proc if `:$out` argument to `proc-q` is
+Contains a `Stringy` with STDOUT of the proc if `:$out` argument to `proc-q` is
 set to a true value.
 
 ### `.err`
 
-Contains a `Cool` with STDERR of the proc if `:$err` argument to `proc-q` is
+Contains a `Stringy` with STDERR of the proc if `:$err` argument to `proc-q` is
 set to a true value.
 
 ### `.merged`
 
-Contains a `Cool` with merged STDOUT and STDERR of the proc if `:$merge`
+Contains a `Stringy` with merged STDOUT and STDERR of the proc if `:$merge`
 argument to `proc-q` is set to a true value. Note that even when `:$merge` is in
 use, the `.out` and `.err` methods will contain the separated streams.
 

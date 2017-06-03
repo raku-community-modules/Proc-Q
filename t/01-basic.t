@@ -15,7 +15,7 @@ react whenever proc-q
         "say '$_' ~ \$*IN.slurp; note '$_'; sleep {2*($++/5).Int}; exit {$++}"
     }),
     :tags[@l.map: 'tag' ~ *],
-    # :in[@l».uc],
+    :in[@l».uc],
     :13batch,
     :timeout(3),
     :merge
