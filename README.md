@@ -169,7 +169,7 @@ The process is killed with `SIGTERM` signal and if after 1 second it's still
 alive, it gets another kill with `SIGSEGV`.
 
 **NOTE:** another batch of procs **won't get started** until all procs in the
-current batch complete so if you don't specify a `$:timeout`, a single hung proc
+current batch complete so if you don't specify a `:$timeout`, a single hung proc
 will hold everyone up.
 
 ### `:$out`
