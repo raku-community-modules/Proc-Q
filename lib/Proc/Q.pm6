@@ -25,7 +25,7 @@ sub proc-q (
     my $c = Channel.new;
     start await Supply.from-list(@commands Z @tags Z @in).throttle: $batch,
       -> ($command, $tag, $in) {
-          Proc::Async.new: |$command, :w($in.defined) -> $proc {
+          with Proc::Async.new: |$command, :w($in.defined) -> $proc {
               CATCH { default { .say } }
               my Stringy $out-res = $out eq 'bin' ?? Buf.new !! '' if $out;
               my Stringy $err-res = $err eq 'bin' ?? Buf.new !! '' if $err;
