@@ -23,7 +23,7 @@ sub proc-q (
     --> Channel:D
 ) is export {
     my $c = Channel.new;
-    start await Supply.from-list(@commands Z @tags Z @in).throttle: $batch,
+    (start await Supply.from-list(@commands Z @tags Z @in).throttle: $batch,
       -> ($command, $tag, $in) {
           with Proc::Async.new: |$command, :w($in.defined) -> $proc {
               CATCH { default { .say } }
@@ -67,6 +67,6 @@ sub proc-q (
                      :$tag,          :$killed,
                      :exitcode($proc-obj.exitcode)
           }
-    }.then: {$c.close};
+    }).then: {$c.close};
     $c
 }
