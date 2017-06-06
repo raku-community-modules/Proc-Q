@@ -56,7 +56,7 @@ sub proc-q (
 
               my $proc-obj = await $prom;
 
-              $channel.send: class Res {
+              $c.send: class Res {
                   has Stringy $.out      is required;
                   has Stringy $.err      is required;
                   has Stringy $.merged   is required;
