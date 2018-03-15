@@ -17,7 +17,6 @@ react whenever proc-q
     }),
     :tags[@l.map: 'tag' ~ *],
     :in[@l».uc],
-    :13batch,
     :timeout(3),
     :merge
 {
