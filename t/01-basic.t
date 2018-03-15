@@ -17,6 +17,7 @@ react whenever proc-q
     }),
     :tags[@l.map: 'tag' ~ *],
     :in[@l».uc],
+    :batch,
     :timeout(3),
     :merge
 {
@@ -35,7 +36,7 @@ for @res {
 }
 
 my @exp =
-    ${:err("a\n"), :exitcode(0), :!killed, :merged($(("a", "aA"))), :out("aA\n"), n:tag("taga")},
+    ${:err("a\n"), :exitcode(0), :!killed, :merged($(("a", "aA"))), :out("aA\n"), :tag("taga")},
     ${:err("b\n"), :exitcode(1), :!killed, :merged($(("b", "bB"))), :out("bB\n"), :tag("tagb")},
     ${:err("c\n"), :exitcode(2), :!killed, :merged($(("c", "cC"))), :out("cC\n"), :tag("tagc")},
     ${:err("d\n"), :exitcode(3), :!killed, :merged($(("d", "dD"))), :out("dD\n"), :tag("tagd")},
