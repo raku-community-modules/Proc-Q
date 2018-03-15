@@ -9,10 +9,11 @@ my @res;
 my @l = 'a'..'z';
 my $now = now;
 my $first-response;
+my $idx = 0;
 react whenever proc-q
     @l.map({
         $*EXECUTABLE, '-e',
-        "say '$_' ~ \$*IN.slurp; note '$_'; sleep {2*($++/5).Int}; exit {$++}"
+        "say '$_' ~ \$*IN.slurp; note '$_'; sleep {2*($idx/5).Int}; exit {$idx++}"
     }),
     :tags[@l.map: 'tag' ~ *],
     :in[@l».uc],
@@ -35,7 +36,7 @@ for @res {
 }
 
 my @exp =
-    ${:err("a\n"), :exitcode(0), :!killed, :merged($(("a", "aA"))), :out("aA\n"), :tag("taga")},
+    ${:err("a\n"), :exitcode(0), :!killed, :merged($(("a", "aA"))), :out("aA\n"), n:tag("taga")},
     ${:err("b\n"), :exitcode(1), :!killed, :merged($(("b", "bB"))), :out("bB\n"), :tag("tagb")},
     ${:err("c\n"), :exitcode(2), :!killed, :merged($(("c", "cC"))), :out("cC\n"), :tag("tagc")},
     ${:err("d\n"), :exitcode(3), :!killed, :merged($(("d", "dD"))), :out("dD\n"), :tag("tagd")},
