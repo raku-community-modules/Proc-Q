@@ -17,5 +17,5 @@
         "Proc::Q" : "lib/Proc/Q.pm6"
     },
     "authors"       : ["Zoffix Znet"],
-    "support"       : {"source" : "https://github.com/zoffixznet/perl6-Proc-Q.git"}
+    "support"       : {"source" : "https://github.com/raku-community-modules/Proc-Q.git"}
 }
