@@ -31,7 +31,7 @@ Proc::Q - Queue up and run a herd of Procs
 
 # SYNOPSIS
 
-```perl6
+```raku
 use Proc::Q;
 
 # Run 26 procs; each receiving stuff on STDIN and putting stuff out to STDOUT,
@@ -92,7 +92,7 @@ and run, preferably with some timeout for Procs that get stuck? Well, good news!
 
 Defined as:
 
-```perl6
+```raku
     sub proc-q (
         +@commands where .so && .all ~~ List & .so,
 
@@ -116,11 +116,11 @@ Defined as:
 
 See SYNOPSIS for sample use.
 
-Returns a [`Channel`](https://docs.perl6.org/type/Channel) of `Proc::Q::Res`
+Returns a [`Channel`](https://docs.raku.org/type/Channel) of `Proc::Q::Res`
 objects. Batches the `@commands` in batches of `$batch` and runs those via
 in parallel, optionally feeding STDIN with corresponding data from
 `@in`, as well as capturing STDOUT/STDERR, and [killing the
-process](https://docs.perl6.org/type/Proc::Async#method_kill) after
+process](https://docs.raku.org/type/Proc::Async#method_kill) after
 `$timeout`, if specified.
 
 Arguments are as follows:
@@ -128,7 +128,7 @@ Arguments are as follows:
 ### `+@commands`
 
 A list of lists, where each of inner lists is a list of arguments to
-[`Proc::Async.new`](https://docs.perl6.org/type/Proc::Async#method_new). You
+[`Proc::Async.new`](https://docs.raku.org/type/Proc::Async#method_new). You
 do not need to specify the `:w` argument, and if you do, its value will be
 ignored.
 
@@ -165,7 +165,7 @@ to run at the same time.
 By default is not specified.
 Takes a positive `Numeric` specifying the number of seconds after which
 a proc should be killed, if it did not complete yet. Timer starts ticking once
-the proc is [`.ready`](https://docs.perl6.org/type/Proc::Async#method_ready).
+the proc is [`.ready`](https://docs.raku.org/type/Proc::Async#method_ready).
 The process is killed with `SIGTERM` signal and if after 1 second it's still
 alive, it gets another kill with `SIGSEGV`.
 
@@ -232,7 +232,7 @@ use, the `.out` and `.err` methods will contain the separated streams.
 
 ### `.exitcode`
 
-Contains [the exit code](https://docs.perl6.org/type/Proc#method_exitcode) of
+Contains [the exit code](https://docs.raku.org/type/Proc#method_exitcode) of
 the executed proc.
 
 ### `.killed`
@@ -241,7 +241,7 @@ A `Bool:D` that is `True` if this proc was killed due to the `:$timeout`. More
 precisely, this is an indication that the timeout expired and the kill code
 started to run. It *is* possible for a proc to successfully complete in this
 small window opportunity between the attribute being set and the signal from
-[`.kill`](https://docs.perl6.org/type/Proc::Async#method_kill)
+[`.kill`](https://docs.raku.org/type/Proc::Async#method_kill)
 being received by the process
 
 ----
@@ -249,12 +249,12 @@ being received by the process
 #### REPOSITORY
 
 Fork this module on GitHub:
-https://github.com/zoffixznet/perl6-Proc-Q
+https://github.com/raku-community-modules/Proc-Q
 
 #### BUGS
 
 To report bugs or request features, please use
-https://github.com/zoffixznet/perl6-Proc-Q/issues
+https://github.com/raku-community-modules/Proc-Q/issues
 
 #### AUTHOR
 
