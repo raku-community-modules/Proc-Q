@@ -1,4 +1,3 @@
-use lib <lib>;
 use Testo;
 use Test::Notice;
 use Proc::Q;
@@ -70,3 +69,5 @@ for @res.keys {
     @exp[$_]<merged>:delete;
     is-eqv @res[$_], @exp[$_], "result $_";
 }
+
+# vim: expandtab shiftwidth=4

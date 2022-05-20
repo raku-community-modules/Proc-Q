@@ -1,4 +1,3 @@
-use lib <lib>;
 use Testo;
 use Proc::Q;
 
@@ -29,3 +28,5 @@ plan 2;
     }
     is ($after - $before).Int, 0..1, '3 batch';
 }
+
+# vim: expandtab shiftwidth=4

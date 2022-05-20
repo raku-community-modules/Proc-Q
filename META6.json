@@ -1,21 +1,32 @@
 {
-    "perl"         : "6.c",
-    "name"         : "Proc::Q",
-    "license"      : "Artistic-2.0",
-    "version"      : "1.001003",
-    "description"  : "Queue up and run a herd of Procs",
-    "tags"         : [ "proc", "process" ],
-    "depends"      : [
-        "RakudoPrereq"
-    ],
-    "test-depends" : [
-        "Testo",
-        "Test::Notice",
-        "Test::META"
-    ],
-    "provides"     : {
-        "Proc::Q" : "lib/Proc/Q.pm6"
-    },
-    "authors"       : ["Zoffix Znet"],
-    "support"       : {"source" : "https://github.com/raku-community-modules/Proc-Q.git"}
+  "auth": "zef:raku-community-modules",
+  "authors": [
+    "Zoffix Znet"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+  ],
+  "description": "Queue up and run a herd of Procs",
+  "license": "Artistic-2.0",
+  "name": "Proc::Q",
+  "perl": "6.c",
+  "provides": {
+    "Proc::Q": "lib/Proc/Q.rakumod"
+  },
+  "resources": [
+  ],
+  "source-url": "https://github.com/raku-community-modules/Proc-Q.git",
+  "support": {
+    "source": "https://github.com/raku-community-modules/Proc-Q.git"
+  },
+  "tags": [
+    "proc",
+    "process"
+  ],
+  "test-depends": [
+    "Testo",
+    "Test::Notice"
+  ],
+  "version": "1.1"
 }
